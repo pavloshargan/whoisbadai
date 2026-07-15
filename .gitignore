@@ -1,0 +1,18 @@
+# Xcode / build output
+build/
+DerivedData/
+*.xcarchive
+*.ipa
+*.app.dSYM.zip
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# CI packaging artifacts
+*.zip
+*.zip.sha256
+
+# macOS
+.DS_Store

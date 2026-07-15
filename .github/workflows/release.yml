@@ -1,0 +1,91 @@
+name: Release
+
+# Push a tag like v1.0.0 to build a Release .app on a GitHub-hosted macOS
+# runner, package it, compute a SHA-256 checksum, and publish a GitHub
+# Release with the zip + checksum attached and the hash printed in the notes
+# so anyone can verify the download.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag/version to release (e.g. v1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 16
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build (Release)
+        run: |
+          xcodebuild \
+            -project whoisbadai.xcodeproj \
+            -scheme whoisbadai \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package + checksum
+        id: package
+        run: |
+          APP="build/Build/Products/Release/whoisbadai.app"
+          test -d "$APP" || { echo "::error::App not found at $APP"; exit 1; }
+          # ditto keeps the .app bundle intact inside the zip.
+          ditto -c -k --keepParent "$APP" whoisbadai.zip
+          SHA=$(shasum -a 256 whoisbadai.zip | awk '{print $1}')
+          echo "$SHA  whoisbadai.zip" > whoisbadai.zip.sha256
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "SHA-256: $SHA"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          SHA="${{ steps.package.outputs.sha }}"
+          cat > notes.md <<EOF
+          **whoisbadai $TAG** — AirPods-motion-controlled digital whip for macOS.
+
+          ### Install
+          1. Download \`whoisbadai.zip\` below and unzip.
+          2. Move \`whoisbadai.app\` to \`/Applications\`.
+          3. First launch: right-click → **Open** (the build is unsigned), then
+             grant **Motion & Fitness** access.
+
+          ### Verify your download (SHA-256)
+          \`\`\`
+          $SHA  whoisbadai.zip
+          \`\`\`
+          \`\`\`sh
+          shasum -a 256 whoisbadai.zip
+          \`\`\`
+          The printed hash must match the value above (also in \`whoisbadai.zip.sha256\`).
+          EOF
+
+          gh release create "$TAG" \
+            whoisbadai.zip whoisbadai.zip.sha256 \
+            --title "whoisbadai $TAG" \
+            --notes-file notes.md

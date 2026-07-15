@@ -1,0 +1,33 @@
+name: CI
+
+# Compile-check every push and PR on a GitHub-hosted macOS runner.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (Debug)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 16
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Show toolchain
+        run: xcodebuild -version
+
+      - name: Build
+        run: |
+          xcodebuild \
+            -project whoisbadai.xcodeproj \
+            -scheme whoisbadai \
+            -configuration Debug \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
