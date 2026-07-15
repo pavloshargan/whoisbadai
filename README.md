@@ -40,11 +40,20 @@ it keeps reporting motion in your hand, which is what you whip.
 
 ## Install
 
-Grab the latest `whoisbadai.zip` from
-[Releases](../../releases), unzip, and move `whoisbadai.app` to
-`/Applications`. First launch: right-click → **Open** (the build is unsigned),
-then approve **Motion & Fitness** access. Every release lists a SHA-256 so you
+Grab the latest `whoisbadai.zip` from [Releases](../../releases), unzip, and
+move `whoisbadai.app` to `/Applications`. Every release lists a SHA-256 so you
 can verify the download.
+
+> **"whoisbadai is damaged and can't be opened"?** That's Gatekeeper, not a
+> corrupt file — the build is unsigned (no Apple Developer account), so macOS
+> quarantines it on download. Clear the quarantine flag once and it opens
+> normally (right-click → Open does *not* work for this case):
+>
+> ```sh
+> xattr -dr com.apple.quarantine /Applications/whoisbadai.app
+> ```
+
+On first launch, approve **Motion & Fitness** access.
 
 ## Build from source
 
