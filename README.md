@@ -12,7 +12,7 @@ you stop whipping.
 Inspired by the viral ["digital whip to make Claude work faster"](https://github.com/GitFrog1111/OpenWhip),
 but instead of a mouse it's driven by the IMU inside your AirPods.
 
-![whoisbadai in action](docs/whip-in-action.gif)
+![whoisbadai in action](docs/whip-demo.gif)
 
 Built with Swift, SwiftUI, AppKit, and Core Motion — no web tech, no images
 for the whip (it's all procedural), no third-party runtime dependencies.
