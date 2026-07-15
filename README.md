@@ -54,11 +54,6 @@ a "whip" on a sharp flick, and a procedural rope-physics whip (ported from
 OpenWhip) cracks across a transparent, click-through overlay on top of
 everything. Closing the window keeps it running in the menu bar.
 
-## Releases
-
-Push a `v*` tag and GitHub Actions builds on a macOS runner, then publishes a
-zip plus a SHA-256 checksum to Releases. Every push is compile-checked.
-
 ## License
 
 [MIT](LICENSE) © 2026 Pavlo Sharhan
