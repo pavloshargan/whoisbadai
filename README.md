@@ -1,5 +1,7 @@
 # whoisbadai 🪢
 
+This is first app in the world that uses an Airpod as a handheld IMU controller
+
 Turn your **left AirPod into a digital whip**. Hold it in your hand, crack it
 like a whip, and an animated whip lashes across your screen with a sound — then
 fades out when you stop.
